@@ -24,7 +24,7 @@
     <actions>
         <action
                 id="Craftspire.GPTReviewCode.ToolsMenu"
-                class="it.craftspire.gptreview.GetReviewAction"
+                class="it.craftspire.gptreview.actions.GetReviewAction"
                 text="Review Selected Text with GPT"
                 description="Performs code review of selected text using OpenAI ChatGPT">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>

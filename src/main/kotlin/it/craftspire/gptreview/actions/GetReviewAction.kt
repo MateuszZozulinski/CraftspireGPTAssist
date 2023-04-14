@@ -1,4 +1,4 @@
-package it.craftspire.gptreview
+package it.craftspire.gptreview.actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -6,10 +6,14 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.theokanning.openai.completion.chat.ChatCompletionRequest
 import com.theokanning.openai.completion.chat.ChatMessage
 import com.theokanning.openai.service.OpenAiService
+import it.craftspire.gptreview.state.StoredStateComponent
 import java.time.Duration
 
 
 class GetReviewAction : AnAction() {
+    private val configState
+        get() = StoredStateComponent.instance.state
+
     override fun actionPerformed(e: AnActionEvent) {
         val file = e.getData(CommonDataKeys.PSI_FILE)
         val lang = file!!.language
@@ -17,7 +21,7 @@ class GetReviewAction : AnAction() {
         val caretModel = editor.caretModel
         val selectedText = caretModel.currentCaret.selectedText
 
-        val service = OpenAiService("token", Duration.ofSeconds(60))
+        val service = OpenAiService(configState.getAPIKey(), Duration.ofSeconds(60))
 
         System.out.println(lang);
         val completionRequest = ChatCompletionRequest.builder()
@@ -35,6 +39,6 @@ class GetReviewAction : AnAction() {
     override fun update(e: AnActionEvent) {
         val editor = e.getRequiredData(CommonDataKeys.EDITOR)
         val caretModel = editor.getCaretModel()
-        e.presentation.isEnabledAndVisible = caretModel.currentCaret.hasSelection()
+        e.presentation.isEnabledAndVisible = caretModel.currentCaret.hasSelection() && configState.keySet == true
     }
 }
