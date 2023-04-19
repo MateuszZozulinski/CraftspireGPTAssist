@@ -1,18 +1,26 @@
 package it.craftspire.gptreview.actions
 
+import com.intellij.codeInsight.hint.HintManager
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.editor.Editor
 import com.theokanning.openai.completion.chat.ChatCompletionRequest
 import com.theokanning.openai.completion.chat.ChatMessage
 import com.theokanning.openai.service.OpenAiService
 import it.craftspire.gptreview.state.StoredStateComponent
 import java.time.Duration
+import kotlin.text.StringBuilder
 
 
 class GetReviewAction : AnAction() {
     private val configState
         get() = StoredStateComponent.instance.state
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
+    }
 
     override fun actionPerformed(e: AnActionEvent) {
         val file = e.getData(CommonDataKeys.PSI_FILE)
@@ -23,7 +31,6 @@ class GetReviewAction : AnAction() {
 
         val service = OpenAiService(configState.getAPIKey(), Duration.ofSeconds(60))
 
-        System.out.println(lang);
         val completionRequest = ChatCompletionRequest.builder()
                 .temperature(0.3)
                 .maxTokens(2048)
@@ -33,8 +40,15 @@ class GetReviewAction : AnAction() {
                                 "each response line should single issue in format [linenumber:severity] issue:  \n$selectedText")))
                 .model("gpt-3.5-turbo")
                 .build()
-        service.createChatCompletion(completionRequest).getChoices().forEach(System.out::println)
+        val sb = StringBuilder("")
+        service.createChatCompletion(completionRequest).choices.forEach{ sb.appendLine(it.message)}
+        showCodeReview(editor, sb.toString())
     }
+
+    private fun showCodeReview(
+            editor: Editor, message: String
+    ) = HintManager.getInstance()
+            .showInformationHint(editor, message)
 
     override fun update(e: AnActionEvent) {
         val editor = e.getRequiredData(CommonDataKeys.EDITOR)

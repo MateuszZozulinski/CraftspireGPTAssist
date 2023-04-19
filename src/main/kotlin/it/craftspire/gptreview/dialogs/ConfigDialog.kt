@@ -6,36 +6,36 @@ import com.intellij.util.ui.FormBuilder
 import it.craftspire.gptreview.state.StoredStateComponent
 import java.awt.BorderLayout
 import java.awt.FlowLayout
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import javax.swing.JComponent
 import javax.swing.JFormattedTextField
 import javax.swing.JPanel
 import javax.swing.JTextField
-import javax.swing.text.NumberFormatter
 
 
 class ConfigDialog : Configurable, Disposable {
 
-    private val temperatureFormatter = NumberFormatter(DecimalFormat.getNumberInstance()).also {
-        it.minimum = 0
-        it.maximum = 1
-        it.allowsInvalid = true
+    private val temperatureFormatter = DecimalFormat.getInstance().also {
+        it.minimumFractionDigits = 2
+        it.maximumFractionDigits = 2
+        it.roundingMode = RoundingMode.HALF_UP
     }
 
     private val configState
         get() = StoredStateComponent.instance.state
 
     private var gptModelField: JTextField? =
-            JTextField().also { it.text = configState.gptModel }
+            JTextField(40).also { it.text = configState.gptModel }
     private var gptApiKeyField: JTextField? =
-            JTextField().also { it.text = "***" }
+            JTextField(40).also { it.text = "***" }
 
     private var temperatureField: JFormattedTextField? =
-            JFormattedTextField(temperatureFormatter).also { it.text = configState.temperature.toString() }
+            JFormattedTextField(temperatureFormatter).also { it.value = configState.temperature }
 
     override fun getDisplayName(): String = "Craftspire GPT Code Review Plugin Configuration"
 
-    override fun createComponent(): JComponent? {
+    override fun createComponent(): JComponent {
 
         val formPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent("ChatGPT API Key", JPanel(FlowLayout(FlowLayout.LEFT)).also {
@@ -60,22 +60,26 @@ class ConfigDialog : Configurable, Disposable {
     }
 
     override fun isModified(): Boolean {
-
         return configState.gptModel != gptModelField!!.text
                 || "***" != gptApiKeyField!!.text
                 || configState.temperature != temperatureField!!.text.toDoubleOrNull()
     }
 
     override fun apply() {
-        if ("***" != gptApiKeyField!!.text) {
-            configState.setAPIKey(gptApiKeyField!!.text)
+        gptApiKeyField?.let {
+            if ("***" != it.text) {
+                configState.setAPIKey(it.text)
+                it.text = "***"
+            }
         }
 
         configState.gptModel = gptModelField!!.text
 
-        temperatureField!!.text.toDoubleOrNull()?.let {
-            if (it in 0.0..1.0) {
-                configState.temperature = it
+        temperatureField?.let { field ->
+            temperatureFormatter.parse(field.text).toDouble().let {
+                if (it in 0.0..1.0) {
+                    configState.temperature = it
+                }
             }
         }
     }
@@ -83,6 +87,6 @@ class ConfigDialog : Configurable, Disposable {
     override fun reset() {
         gptApiKeyField!!.text = "***"
         gptModelField!!.text = configState.gptModel
-        temperatureField!!.text = configState.temperature.toString()
+        temperatureField!!.value = configState.temperature
     }
 }
