@@ -1,17 +1,22 @@
-package it.craftspire.gptreview.actions
+package it.craftspire.gptassist.actions
 
-import com.intellij.codeInsight.hint.HintManager
 import com.intellij.lang.Language
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
-import it.craftspire.gptreview.gpt.GPTRequestService
-import it.craftspire.gptreview.state.StoredStateComponent
+import com.intellij.openapi.ui.popup.Balloon
+import com.intellij.ui.GotItTooltip
+import it.craftspire.gptassist.state.StoredStateComponent
 
 
-class GetReviewAction : AnAction() {
+abstract class MenuAction : AnAction() {
+
+    companion object {
+        private const val TOOLTIP_ID = "tooltip.craftspire.review"
+    }
 
     private val configState
         get() = StoredStateComponent.instance.state
@@ -20,33 +25,25 @@ class GetReviewAction : AnAction() {
         return ActionUpdateThread.BGT
     }
 
-    override fun actionPerformed(e: AnActionEvent) {
-        val editor = e.getRequiredData(CommonDataKeys.EDITOR)
-
-        val lang = getFileCodingLanguage(e)
-        val selectedText = getSelectedText(editor)
-
-        val gptResponse = GPTRequestService.instance.executeCodeReviewRequest(lang.toString(), selectedText)
-
-        showCodeReview(editor, gptResponse)
-    }
-
-    private fun getSelectedText(editor: Editor): String {
+    internal fun getSelectedText(editor: Editor): String {
         val caretModel = editor.caretModel
         val selectedText = caretModel.currentCaret.selectedText!!
         return selectedText
     }
 
-    private fun getFileCodingLanguage(e: AnActionEvent): Language {
+    internal fun getFileCodingLanguage(e: AnActionEvent): Language {
         val file = e.getData(CommonDataKeys.PSI_FILE)
         val lang = file!!.language
         return lang
     }
 
-    private fun showCodeReview(
-            editor: Editor, message: String
-    ) = HintManager.getInstance()
-            .showInformationHint(editor, message)
+    internal fun showCodeReview(
+            editor: Editor, caret: Caret, text: String
+    ) = GotItTooltip(TOOLTIP_ID, text, editor.project)
+            .withShowCount(Int.MAX_VALUE)
+            .withPosition(Balloon.Position.above)
+            .withMaxWidth(800)
+            .show(editor.contentComponent) { c, b -> editor.offsetToXY(caret.selectionStart) }
 
     override fun update(e: AnActionEvent) {
         val editor = e.getRequiredData(CommonDataKeys.EDITOR)

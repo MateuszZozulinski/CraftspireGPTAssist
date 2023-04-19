@@ -1,4 +1,4 @@
-package it.craftspire.gptreview.state
+package it.craftspire.gptassist.state
 
 import com.intellij.credentialStore.CredentialAttributes
 import com.intellij.credentialStore.Credentials
@@ -16,7 +16,7 @@ import com.intellij.openapi.components.Storage
 open class StoredStateComponent : PersistentStateComponent<StoredStateComponent.SavedState> {
 
     companion object {
-        val CREDENTIAL_SERVICE_NAME = "GPTReview"
+        private const val CREDENTIAL_SERVICE_NAME = "GPTReview"
         val instance: StoredStateComponent
             get() = ApplicationManager.getApplication().getService(StoredStateComponent::class.java)
     }
@@ -45,7 +45,7 @@ open class StoredStateComponent : PersistentStateComponent<StoredStateComponent.
 
         fun getAPIKey(): String? {
             val credentialAttributes = CredentialAttributes(CREDENTIAL_SERVICE_NAME)
-            if (PasswordSafe.instance.get(credentialAttributes)!= null) {
+            if (PasswordSafe.instance.get(credentialAttributes) != null) {
                 val apiKey = PasswordSafe.instance.get(credentialAttributes)?.password
                 return apiKey.toString()
             } else {

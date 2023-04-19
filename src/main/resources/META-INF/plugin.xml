@@ -22,21 +22,30 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
     <actions>
-        <action
-                id="Craftspire.GPTReviewCode.ToolsMenu"
-                class="it.craftspire.gptreview.actions.GetReviewAction"
-                text="Review Selected Text with GPT"
-                description="Performs code review of selected text using OpenAI ChatGPT">
+        <group id="Craftspire.GPTAssist.MenuGroup" text="GPT Code Assist" description="Contains GPT code assist tools" >
+            <action
+                    id="Craftspire.GPTReview.ToolsMenu"
+                    class="it.craftspire.gptassist.actions.GPTReviewAction"
+                    text="Review Selected Code with GPT"
+                    description="Performs code review of selected text using OpenAI ChatGPT">
+            </action>
+            <action
+                    id="Craftspire.GPTCodeExplain.ToolsMenu"
+                    class="it.craftspire.gptassist.actions.GPTCodeExplainAction"
+                    text="Describe Selected Code with GPT"
+                    description="Provides information about selected code using OpenAI ChatGPT">
+            </action>
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-        </action>
+        </group>
+
     </actions>
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <applicationService
-                serviceInterface="it.craftspire.gptreview.state.StoredStateComponent"
-                serviceImplementation="it.craftspire.gptreview.state.StoredStateComponent"/>
-        <applicationConfigurable instance="it.craftspire.gptreview.dialogs.ConfigDialog" id="gptreview.craftspire" displayName="Craftspire"/>
+                serviceInterface="it.craftspire.gptassist.state.StoredStateComponent"
+                serviceImplementation="it.craftspire.gptassist.state.StoredStateComponent"/>
+        <applicationConfigurable instance="it.craftspire.gptassist.dialogs.ConfigDialog" id="gptreview.craftspire.gptassist" displayName="GPT Code Assist"/>
     </extensions>
 </idea-plugin>

@@ -1,9 +1,9 @@
-package it.craftspire.gptreview.dialogs
+package it.craftspire.gptassist.dialogs
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.Configurable
 import com.intellij.util.ui.FormBuilder
-import it.craftspire.gptreview.state.StoredStateComponent
+import it.craftspire.gptassist.state.StoredStateComponent
 import java.awt.BorderLayout
 import java.awt.FlowLayout
 import java.math.RoundingMode
@@ -14,7 +14,13 @@ import javax.swing.JPanel
 import javax.swing.JTextField
 
 
+private const val s = "***"
+
 class ConfigDialog : Configurable, Disposable {
+
+    companion object {
+        private const val HIDDEN_API_TOKEN = "***"
+    }
 
     private val temperatureFormatter = DecimalFormat.getInstance().also {
         it.minimumFractionDigits = 2
@@ -28,12 +34,12 @@ class ConfigDialog : Configurable, Disposable {
     private var gptModelField: JTextField? =
             JTextField(40).also { it.text = configState.gptModel }
     private var gptApiKeyField: JTextField? =
-            JTextField(40).also { it.text = "***" }
+            JTextField(40).also { it.text = HIDDEN_API_TOKEN }
 
     private var temperatureField: JFormattedTextField? =
             JFormattedTextField(temperatureFormatter).also { it.value = configState.temperature }
 
-    override fun getDisplayName(): String = "Craftspire GPT Code Review Plugin Configuration"
+    override fun getDisplayName(): String = "Craftspire GPT Code Assist Plugin Configuration"
 
     override fun createComponent(): JComponent {
 
@@ -61,15 +67,15 @@ class ConfigDialog : Configurable, Disposable {
 
     override fun isModified(): Boolean {
         return configState.gptModel != gptModelField!!.text
-                || "***" != gptApiKeyField!!.text
+                || HIDDEN_API_TOKEN != gptApiKeyField!!.text
                 || configState.temperature != temperatureField!!.text.toDoubleOrNull()
     }
 
     override fun apply() {
         gptApiKeyField?.let {
-            if ("***" != it.text) {
+            if (HIDDEN_API_TOKEN != it.text) {
                 configState.setAPIKey(it.text)
-                it.text = "***"
+                it.text = HIDDEN_API_TOKEN
             }
         }
 
@@ -85,7 +91,7 @@ class ConfigDialog : Configurable, Disposable {
     }
 
     override fun reset() {
-        gptApiKeyField!!.text = "***"
+        gptApiKeyField!!.text = HIDDEN_API_TOKEN
         gptModelField!!.text = configState.gptModel
         temperatureField!!.value = configState.temperature
     }
