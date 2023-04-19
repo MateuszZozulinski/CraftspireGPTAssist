@@ -14,8 +14,6 @@ import javax.swing.JPanel
 import javax.swing.JTextField
 
 
-private const val s = "***"
-
 class ConfigDialog : Configurable, Disposable {
 
     companion object {
@@ -44,7 +42,7 @@ class ConfigDialog : Configurable, Disposable {
     override fun createComponent(): JComponent {
 
         val formPanel = FormBuilder.createFormBuilder()
-                .addLabeledComponent("ChatGPT API Key", JPanel(FlowLayout(FlowLayout.LEFT)).also {
+                .addLabeledComponent("OpenAI API Key", JPanel(FlowLayout(FlowLayout.LEFT)).also {
                     it.add(gptApiKeyField)
                 })
                 .addLabeledComponent("GPT model", JPanel(FlowLayout(FlowLayout.LEFT)).also {
@@ -83,7 +81,7 @@ class ConfigDialog : Configurable, Disposable {
 
         temperatureField?.let { field ->
             temperatureFormatter.parse(field.text).toDouble().let {
-                if (it in 0.0..1.0) {
+                if (it in 0.0..2.0) {
                     configState.temperature = it
                 }
             }
