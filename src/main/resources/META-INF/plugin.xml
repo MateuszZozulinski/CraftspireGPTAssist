@@ -34,6 +34,9 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-
+        <applicationService
+                serviceInterface="it.craftspire.gptreview.state.StoredStateComponent"
+                serviceImplementation="it.craftspire.gptreview.state.StoredStateComponent"/>
+        <applicationConfigurable instance="it.craftspire.gptreview.dialogs.ConfigDialog" id="gptreview.craftspire" displayName="Craftspire"/>
     </extensions>
 </idea-plugin>
