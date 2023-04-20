@@ -1,1 +1,1 @@
-rootProject.name = "gpt-review"
+rootProject.name = "gpt-code-assist"

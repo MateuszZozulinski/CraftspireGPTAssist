@@ -1,6 +1,6 @@
 # Craftspire GPT Assist 
 
-This is Intellij Idea plugin using OpenAI-Java API(https://github.com/TheoKanning/openai-java) to integrate with OpenAI's GPT apis. It supports multiple different GPT API's and may be tuned to user needs at any time.
+This is Intellij Idea plugin using OpenAI-Java API(https://github.com/TheoKanning/openai-java) to integrate with OpenAI. It supports multiple different GPT API's and may be tuned to user needs at any time.
 
 ## Initial Configuration
 1. Request an OpenAI API key (https://platform.openai.com/account/api-keys) or use existing one.

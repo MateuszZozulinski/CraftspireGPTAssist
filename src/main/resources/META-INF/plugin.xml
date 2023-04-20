@@ -5,7 +5,7 @@
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>GPT Code Review</name>
+    <name>GPT Code Assist</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="mateusz.zozulinski@craftspire.it" url="https://craftspire.it">Craftspire</vendor>
@@ -14,17 +14,25 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
-  ]]></description>
+        <p>Adds integration for <em>ChatGPT</em> into intellij Idea EditorPopupMenu. </p>
+        <p>
+            Now you can select with your mouse any fragment of code in application and right click to quickly use one of two actions
+            <ul>
+                <li>Ask ChatGPT for explanation of selected code fragment</li>
+                <li>Ask ChatGPT for the code review of selected fragment</li>
+            </ul>
+        </p>
+
+        <p>Full plugin sources and documentation is available at <a href="https://github.com/MateuszZozulinski/CraftspireGPTAssist">Github</a></p>
+]]></description>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
     <actions>
-        <group id="Craftspire.GPTAssist.MenuGroup" text="GPT Code Assist" description="Contains GPT code assist tools" >
+        <group id="Craftspire.gptassist.MenuGroup" text="GPT Code Assist" description="Contains GPT code assist tools" popup="true" >
             <action
-                    id="Craftspire.GPTReview.ToolsMenu"
+                    id="Craftspire.gptassist.ToolsMenu"
                     class="it.craftspire.gptassist.actions.GPTReviewAction"
                     text="Review Selected Code with GPT"
                     description="Performs code review of selected text using OpenAI ChatGPT">
@@ -44,8 +52,7 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <applicationService
-                serviceInterface="it.craftspire.gptassist.state.StoredStateComponent"
                 serviceImplementation="it.craftspire.gptassist.state.StoredStateComponent"/>
-        <applicationConfigurable instance="it.craftspire.gptassist.dialogs.ConfigDialog" id="gptreview.craftspire.gptassist" displayName="GPT Code Assist"/>
+        <applicationConfigurable instance="it.craftspire.gptassist.dialogs.ConfigDialog" id="Craftspire.gptassist.ConfigDialog" displayName="GPT Code Assist"/>
     </extensions>
 </idea-plugin>
