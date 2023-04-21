@@ -1,21 +1,12 @@
 package it.craftspire.gptassist.actions
 
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.lang.Language
 import it.craftspire.gptassist.gpt.GPTRequestService
 
 
 class GPTReviewAction : MenuAction() {
-
-    override fun actionPerformed(e: AnActionEvent) {
-        val editor = e.getRequiredData(CommonDataKeys.EDITOR)
-        val caret = e.getRequiredData(CommonDataKeys.CARET)
-
-        val lang = getFileCodingLanguage(e)
-        val selectedText = getSelectedText(editor)
-
-        val gptResponse = GPTRequestService.instance.reviewSelectedCode(lang.toString(), selectedText)
-        showCodeReview(editor, caret, gptResponse);
+    override fun getGPTResponse(language: Language, selectedText: String): String {
+        return GPTRequestService.instance.reviewSelectedCode(language.toString(), selectedText)
     }
 
 }
