@@ -18,7 +18,8 @@ class GPTRequestService {
 
     companion object {
         private const val CODE_REVIEW_CONSTRUCT = "You are an AI designed to do a brief code review, outlining most important issues in code provided in %language%, check the messages for bugs or potential improvements, suggestions are welcome."
-        private const val CODE_EXPLAIN_CONSTRUCT = "You are an AI designed to assist developers in understanding complex programming code. You will receive code in %language%, please briefly explain the potential purpose of this code"
+        private const val CODE_EXPLAIN_CONSTRUCT = "You are an AI designed to act as a code reverse engineering assistant for novice programmers. I will provide you with code fragments in %language% and you will reply with a description of what the code is supposed to do and nothing else. " +
+                "First help the user to understand what is purpose of this code, follow with detailed description. If there are multiple functions or steps than describe them in separate lines. "
         private const val MAX_LENGTH_EXCEEDED = "Sorry, your query exceeds maximum allowed length. Please select shorter text"
         private const val LANGUAGE_PATTERN = "%language%"
         private const val SYSTEM_USER = "system"
