@@ -34,7 +34,8 @@ abstract class MenuAction : AnAction() {
 
     internal fun getSelectedText(editor: Editor): String {
         val caretModel = editor.caretModel
-        val selectedText = caretModel.currentCaret.selectedText!!
+        var selectedText = caretModel.currentCaret.selectedText
+        if (selectedText == null) selectedText = editor.document.text
         return selectedText
     }
 
@@ -55,9 +56,7 @@ abstract class MenuAction : AnAction() {
     }
 
     override fun update(e: AnActionEvent) {
-        val editor = e.getRequiredData(CommonDataKeys.EDITOR)
-        val caretModel = editor.getCaretModel()
-        e.presentation.isEnabledAndVisible = caretModel.currentCaret.hasSelection() && configState.keySet == true
+        e.presentation.isEnabledAndVisible = configState.keySet == true
     }
 
     override fun actionPerformed(e: AnActionEvent) {

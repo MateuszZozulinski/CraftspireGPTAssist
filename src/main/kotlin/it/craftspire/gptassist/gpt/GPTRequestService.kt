@@ -1,10 +1,16 @@
 package it.craftspire.gptassist.gpt
 
+import com.knuddels.jtokkit.Encodings
+import com.knuddels.jtokkit.api.Encoding
+import com.knuddels.jtokkit.api.EncodingRegistry
+import com.knuddels.jtokkit.api.EncodingType
 import com.theokanning.openai.completion.chat.ChatCompletionRequest
 import com.theokanning.openai.completion.chat.ChatMessage
 import com.theokanning.openai.service.OpenAiService
 import it.craftspire.gptassist.state.StoredStateComponent
+import retrofit2.HttpException
 import java.time.Duration
+
 
 class GPTRequestService {
     private val configState
@@ -13,6 +19,7 @@ class GPTRequestService {
     companion object {
         private const val CODE_REVIEW_CONSTRUCT = "You are an AI designed to do a brief code review, outlining most important issues in code provided in %language%, check the messages for bugs or potential improvements, suggestions are welcome."
         private const val CODE_EXPLAIN_CONSTRUCT = "You are an AI designed to assist developers in understanding complex programming code. You will receive code in %language%, please briefly explain the potential purpose of this code"
+        private const val MAX_LENGTH_EXCEEDED = "Sorry, your query exceeds maximum allowed length. Please select shorter text"
         private const val LANGUAGE_PATTERN = "%language%"
         private const val SYSTEM_USER = "system"
         private const val USER = "user"
@@ -30,9 +37,23 @@ class GPTRequestService {
     }
 
     private fun askGPT(systemQueryConstruct: String, userQuery: String): String {
+        if (!isValidQueryLength(userQuery)) {
+            return MAX_LENGTH_EXCEEDED
+        }
         val service = initiateOpenAIService()
         val completionRequest = buildCompletionRequest(systemQueryConstruct, userQuery)
-        return getGPTChatResponse(service, completionRequest)
+
+        return try {
+            getGPTChatResponse(service, completionRequest)
+        } catch (ex: HttpException) {
+            "OpenAI exception occured: " + ex.message()
+        }
+    }
+
+    private fun isValidQueryLength(userQuery: String): Boolean {
+        val registry: EncodingRegistry = Encodings.newDefaultEncodingRegistry()
+        val enc: Encoding = registry.getEncoding(EncodingType.CL100K_BASE)
+        return enc.countTokens(userQuery) <= 3000
     }
 
     private fun getGPTChatResponse(service: OpenAiService, completionRequest: ChatCompletionRequest?): String {
@@ -40,13 +61,13 @@ class GPTRequestService {
         service.createChatCompletion(completionRequest).choices.forEach {
             responseBuilder.appendLine(it.message.content)
         }
-        return responseBuilder.replace(Regex("\\n"), "<br/>").toString()
+        return responseBuilder.replace(Regex("\\n"), "<br/>")
     }
 
     private fun buildCompletionRequest(systemQueryConstruct: String, userQuery: String): ChatCompletionRequest? =
             ChatCompletionRequest.builder()
                     .temperature(configState.temperature)
-                    .maxTokens(2048)
+                    .maxTokens(1024)
                     .messages(listOf(ChatMessage(
                             SYSTEM_USER, systemQueryConstruct),
                             ChatMessage(USER, userQuery)))

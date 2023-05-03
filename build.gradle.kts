@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "it.craftspire"
-version = "0.1.1"
+version = "0.1.4"
 
 repositories {
     mavenCentral()
@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     implementation("com.theokanning.openai-gpt3-java:service:0.12.0")
+    implementation("com.knuddels:jtokkit:0.4.0")
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -40,9 +41,9 @@ tasks {
     }
 
     signPlugin {
-        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
-        privateKey.set(System.getenv("PRIVATE_KEY"))
-        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+        certificateChainFile.set(file("certificate/chain.crt"))
+        privateKeyFile.set(file("certificate/private.pem"))
+        password.set(System.getenv("craftspire"))
     }
 
     publishPlugin {
