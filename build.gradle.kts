@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "it.craftspire"
-version = "0.1.4"
+version = "0.1.3"
 
 repositories {
     mavenCentral()
@@ -43,7 +43,7 @@ tasks {
     signPlugin {
         certificateChainFile.set(file("certificate/chain.crt"))
         privateKeyFile.set(file("certificate/private.pem"))
-        password.set(System.getenv("craftspire"))
+        password.set(System.getenv("CRAFTSPIRE_CERT_PASS"))
     }
 
     publishPlugin {
