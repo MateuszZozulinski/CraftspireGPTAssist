@@ -63,6 +63,7 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+        <toolWindow factoryClass="it.craftspire.gptassist.windows.GPTToolWindowFactory" id="Craftspire.gptassist.ToolWindow" anchor="bottom" secondary="false"/>
         <applicationService
                 serviceImplementation="it.craftspire.gptassist.state.StoredStateComponent"/>
         <applicationConfigurable instance="it.craftspire.gptassist.dialogs.ConfigDialog" id="Craftspire.gptassist.ConfigDialog" displayName="GPT Code Assist"/>

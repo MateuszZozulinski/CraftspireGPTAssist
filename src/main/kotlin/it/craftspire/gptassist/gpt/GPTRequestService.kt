@@ -17,9 +17,9 @@ class GPTRequestService {
         get() = StoredStateComponent.instance.state
 
     companion object {
-        private const val CODE_REVIEW_CONSTRUCT = "You are an expert software developer focusing on the quality of code. You will receive code snippets and tell the user what could be improved. Feel free to provide code examples as html formatted text."
+        private const val CODE_REVIEW_CONSTRUCT = "You are an expert software developer focusing on the quality of code. You will receive code snippets and tell the user what could be improved. Respond with string in HTML format.."
         private const val CODE_EXPLAIN_CONSTRUCT = "You are code reverse engineering expert working on explaining what the code does to novice programmers. I will provide you with code fragments in %language% and you will reply with a description of what the code is supposed to do and nothing else. " +
-                "First help the user to understand what is purpose of this code, follow with detailed description. If there are multiple functions or steps than describe them in separate lines. "
+                "First help the user to understand what is purpose of this code, follow with detailed description. If there are multiple functions or steps than describe them in separate lines. Respond with string in HTML format. "
         private const val MAX_LENGTH_EXCEEDED = "Sorry, your query exceeds maximum allowed length. Please select shorter text"
         private const val LANGUAGE_PATTERN = "%language%"
         private const val SYSTEM_USER = "system"

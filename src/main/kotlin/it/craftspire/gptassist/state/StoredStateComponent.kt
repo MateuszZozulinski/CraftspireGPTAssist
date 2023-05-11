@@ -36,6 +36,7 @@ open class StoredStateComponent : PersistentStateComponent<StoredStateComponent.
         var keySet = false
         var gptModel = "gpt-3.5-turbo"
         var temperature = 0.3
+        var newLayout = true
 
         fun setAPIKey(apiKey: String) {
             val credentialAttributes = CredentialAttributes(CREDENTIAL_SERVICE_NAME)

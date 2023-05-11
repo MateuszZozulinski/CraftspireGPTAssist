@@ -1,4 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 2048 2048">
 	<rect fill-opacity="0.9" x="64" y="64" width="1920" height="1920" rx="128" ry="128" fill="#160f0b" style="stroke: rgb(84, 48, 33); stroke-width: 128px; stroke-opacity: 1;"></rect>
-	<g transform="scale(0.46)"><path fill-opacity="0.8" transform="translate(258.38, 3213) rotate(180) scale(-1, 1)" fill="#ffffff" d="M739 821H1319V63Q1178 17 1054 -1T799 -20Q468 -20 294 174T119 733Q119 1087 321 1285T883 1483Q1108 1483 1317 1393L1214 1145Q1054 1225 881 1225Q680 1225 559 1090T438 727Q438 489 535 364T819 238Q916 238 1016 258V563H739V821Z"></path><path fill-opacity="0.8" transform="translate(1553.38, 3213) rotate(180) scale(-1, 1)" fill="#ffffff" d="M494 774H596Q739 774 810 830T881 995Q881 1104 822 1156T635 1208H494V774ZM1194 1006Q1194 770 1047 645T627 520H494V0H184V1462H651Q917 1462 1055 1348T1194 1006Z"></path><path fill-opacity="0.8" transform="translate(2848.38, 3213) rotate(180) scale(-1, 1)" fill="#ffffff" d="M748 0H438V1204H41V1462H1145V1204H748V0Z"></path></g>
+
+	<g>
+		<text transform="matrix(8, 0, 0, 10.22764,0, 0)" font-style="normal" xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="40" stroke-width="0" y="135.82514" x="19.14157" stroke="#000" fill="#fff">&gt; GPT</text>
+		<text transform="matrix(7.5, 0, 0, 10.22764,130, 0)" font-style="normal" xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="35" stroke-width="1" y="170.72455" x="40.4181"  stroke="#000" fill="#fff">Code Assist</text>
+	</g>
 </svg>

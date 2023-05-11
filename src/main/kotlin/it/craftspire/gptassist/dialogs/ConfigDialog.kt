@@ -8,10 +8,7 @@ import java.awt.BorderLayout
 import java.awt.FlowLayout
 import java.math.RoundingMode
 import java.text.DecimalFormat
-import javax.swing.JComponent
-import javax.swing.JFormattedTextField
-import javax.swing.JPanel
-import javax.swing.JTextField
+import javax.swing.*
 
 
 class ConfigDialog : Configurable, Disposable {
@@ -37,6 +34,8 @@ class ConfigDialog : Configurable, Disposable {
     private var temperatureField: JFormattedTextField? =
             JFormattedTextField(temperatureFormatter).also { it.value = configState.temperature }
 
+    private var newLayoutCheckbox: JCheckBox? = JCheckBox().also { it.isSelected = configState.newLayout }
+
     override fun getDisplayName(): String = "Craftspire GPT Code Assist Plugin Configuration"
 
     override fun createComponent(): JComponent {
@@ -51,6 +50,9 @@ class ConfigDialog : Configurable, Disposable {
                 .addLabeledComponent("GPT temperature", JPanel(FlowLayout(FlowLayout.LEFT)).also {
                     it.add(temperatureField)
                 })
+                .addLabeledComponent("Enable alternative layout", JPanel(FlowLayout(FlowLayout.LEFT)).also {
+                    it.add(newLayoutCheckbox)
+                })
                 .panel
 
         return JPanel(BorderLayout()).also { it.add(formPanel, BorderLayout.NORTH) }
@@ -61,12 +63,14 @@ class ConfigDialog : Configurable, Disposable {
         gptApiKeyField = null
         gptModelField = null
         temperatureField = null
+        newLayoutCheckbox = null
     }
 
     override fun isModified(): Boolean {
         return configState.gptModel != gptModelField!!.text
                 || HIDDEN_API_TOKEN != gptApiKeyField!!.text
                 || configState.temperature != temperatureField!!.text.toDoubleOrNull()
+                || configState.newLayout != newLayoutCheckbox!!.isSelected
     }
 
     override fun apply() {
@@ -78,6 +82,7 @@ class ConfigDialog : Configurable, Disposable {
         }
 
         configState.gptModel = gptModelField!!.text
+        configState.newLayout = newLayoutCheckbox!!.isSelected
 
         temperatureField?.let { field ->
             temperatureFormatter.parse(field.text).toDouble().let {
@@ -92,5 +97,6 @@ class ConfigDialog : Configurable, Disposable {
         gptApiKeyField!!.text = HIDDEN_API_TOKEN
         gptModelField!!.text = configState.gptModel
         temperatureField!!.value = configState.temperature
+        newLayoutCheckbox!!.isSelected = configState.newLayout
     }
 }

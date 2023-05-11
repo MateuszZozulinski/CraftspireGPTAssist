@@ -15,6 +15,7 @@ import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.ui.GotItTooltip
 import com.intellij.ui.scale.JBUIScale
 import it.craftspire.gptassist.state.StoredStateComponent
+import it.craftspire.gptassist.windows.GPTToolWindowFactory
 
 
 abstract class MenuAction : AnAction() {
@@ -48,6 +49,7 @@ abstract class MenuAction : AnAction() {
     internal fun showCodeReview(
             editor: Editor, text: String, caret: Caret
     ) = ApplicationManager.getApplication().invokeLater {
+        GPTToolWindowFactory.textPane.text =  text
         GotItTooltip(TOOLTIP_ID, text, editor.project)
                 .withShowCount(Int.MAX_VALUE)
                 .withPosition(Balloon.Position.above)
