@@ -50,7 +50,7 @@ class ConfigDialog : Configurable, Disposable {
                 .addLabeledComponent("GPT temperature", JPanel(FlowLayout(FlowLayout.LEFT)).also {
                     it.add(temperatureField)
                 })
-                .addLabeledComponent("Enable alternative layout", JPanel(FlowLayout(FlowLayout.LEFT)).also {
+                .addLabeledComponent("Stream GPT responses (requires restart)", JPanel(FlowLayout(FlowLayout.LEFT)).also {
                     it.add(newLayoutCheckbox)
                 })
                 .panel
