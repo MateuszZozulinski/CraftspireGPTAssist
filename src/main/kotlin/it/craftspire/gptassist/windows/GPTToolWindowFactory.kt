@@ -5,6 +5,7 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
+import com.intellij.ui.scale.JBUIScale
 import it.craftspire.gptassist.state.StoredStateComponent
 import java.awt.Font
 import javax.swing.JTextPane
@@ -31,8 +32,8 @@ class GPTToolWindowFactory : ToolWindowFactory {
         val panel = SimpleToolWindowPanel(true, true)
         val content = ContentFactory.getInstance().createContent(panel, "", false)
         textPane.contentType = "text/html"
-        textPane.font = Font(null, 0, 32)
-        textPane.text = if (StoredStateComponent.instance.savedState.keySet) INITIAL_TEXT_SETUP else INITIAL_TEXT
+        textPane.text = if (StoredStateComponent.instance.savedState.keySet) INITIAL_TEXT else INITIAL_TEXT_SETUP
+        textPane.font = Font("Default", 0,  16)
         panel.add(textPane)
         toolWindow.contentManager.addContent(content)
     }
