@@ -17,9 +17,9 @@ class GPTRequestService {
         get() = StoredStateComponent.instance.state
 
     companion object {
-        private const val CODE_REVIEW_CONSTRUCT = "You are an expert software developer focusing on the quality of code. You will receive code snippets and tell the user what could be improved. Respond with string in HTML format.."
-        private const val CODE_EXPLAIN_CONSTRUCT = "You are code reverse engineering expert working on explaining what the code does to novice programmers. I will provide you with code fragments in %language% and you will reply with a description of what the code is supposed to do and nothing else. " +
-                "First help the user to understand what is purpose of this code, follow with detailed description. If there are multiple functions or steps than describe them in separate lines. Respond with string in HTML format. "
+        private const val CODE_REVIEW_CONSTRUCT = "You are an expert software developer focusing on the quality of code. You will receive code snippets and tell the user what could be improved. Always respond with string in HTML format."
+        private const val CODE_EXPLAIN_CONSTRUCT = "You are AI code reverse engineering expert working on explaining what the code does to novice programmers. I will provide you with code fragments in %language% and you will reply with a description of what the code is supposed to do and nothing else. " +
+                "First state the purpose of this code, follow with detailed description of algorithmic steps. If there are multiple functions or steps than describe them in separately. Always respond with string in HTML format. "
         private const val MAX_LENGTH_EXCEEDED = "Sorry, your query exceeds maximum allowed length. Please select shorter text"
         private const val LANGUAGE_PATTERN = "%language%"
         private const val SYSTEM_USER = "system"
@@ -29,23 +29,23 @@ class GPTRequestService {
             get() = GPTRequestService()
     }
 
-    fun reviewSelectedCode(lang: String, reviewedPatch: String): String {
-        return askGPT(CODE_REVIEW_CONSTRUCT.replace(LANGUAGE_PATTERN, lang), reviewedPatch)
+    fun reviewSelectedCode(lang: String, reviewedPatch: String, handleResponse: (String) -> Unit) {
+        askGPT(CODE_REVIEW_CONSTRUCT.replace(LANGUAGE_PATTERN, lang), reviewedPatch, handleResponse)
     }
 
-    fun describeSelectedCode(lang: String, reviewedPatch: String): String {
-        return askGPT(CODE_EXPLAIN_CONSTRUCT.replace(LANGUAGE_PATTERN, lang), reviewedPatch)
+    fun describeSelectedCode(lang: String, reviewedPatch: String, handleResponse: (String) -> Unit) {
+        askGPT(CODE_EXPLAIN_CONSTRUCT.replace(LANGUAGE_PATTERN, lang), reviewedPatch, handleResponse)
     }
 
-    private fun askGPT(systemQueryConstruct: String, userQuery: String): String {
+    private fun askGPT(systemQueryConstruct: String, userQuery: String, handleResponse: (String) -> Unit) {
         if (!isValidQueryLength(userQuery)) {
-            return MAX_LENGTH_EXCEEDED
+            handleResponse(MAX_LENGTH_EXCEEDED)
         }
         val service = initiateOpenAIService()
         val completionRequest = buildCompletionRequest(systemQueryConstruct, userQuery)
 
-        return try {
-            getGPTChatResponse(service, completionRequest)
+        try {
+            getGPTChatResponse(service, completionRequest, handleResponse)
         } catch (ex: HttpException) {
             "OpenAI exception occured: " + ex.message()
         }
@@ -57,12 +57,20 @@ class GPTRequestService {
         return enc.countTokens(userQuery) <= 3000
     }
 
-    private fun getGPTChatResponse(service: OpenAiService, completionRequest: ChatCompletionRequest?): String {
+    private fun getGPTChatResponse(service: OpenAiService, completionRequest: ChatCompletionRequest?,
+                                   handleResponse: (String) -> Unit) {
         val responseBuilder = StringBuilder("")
-        service.createChatCompletion(completionRequest).choices.forEach {
-            responseBuilder.appendLine(it.message.content)
+        if (configState.newLayout) {
+            service.streamChatCompletion(completionRequest).blockingForEach {
+                val response = it.choices[0].message.content
+                if (response != null) handleResponse(response)
+            }
+        } else {
+            service.createChatCompletion(completionRequest).choices.forEach {
+                responseBuilder.appendLine(it.message.content)
+            }
+            handleResponse(responseBuilder.toString())
         }
-        return responseBuilder.replace(Regex("\\n"), "<br/>")
     }
 
     private fun buildCompletionRequest(systemQueryConstruct: String, userQuery: String): ChatCompletionRequest? =
@@ -73,6 +81,7 @@ class GPTRequestService {
                             SYSTEM_USER, systemQueryConstruct),
                             ChatMessage(USER, userQuery)))
                     .model(configState.gptModel)
+                    .stream(configState.newLayout)
                     .build()
 
     private fun initiateOpenAIService() = OpenAiService(configState.getAPIKey(), Duration.ofSeconds(60))

@@ -33,28 +33,36 @@ abstract class MenuAction : AnAction() {
         return ActionUpdateThread.BGT
     }
 
-    internal fun getSelectedText(editor: Editor): String {
+    private fun getSelectedText(editor: Editor): String {
         val caretModel = editor.caretModel
         var selectedText = caretModel.currentCaret.selectedText
         if (selectedText == null) selectedText = editor.document.text
         return selectedText
     }
 
-    internal fun getFileCodingLanguage(e: AnActionEvent): Language {
+    private fun getFileCodingLanguage(e: AnActionEvent): Language {
         val file = e.getData(CommonDataKeys.PSI_FILE)
         val lang = file!!.language
         return lang
     }
 
-    internal fun showCodeReview(
-            editor: Editor, text: String, caret: Caret
+    private fun showCodeReviewGotITTooltip(
+        editor: Editor, text: String, caret: Caret
     ) = ApplicationManager.getApplication().invokeLater {
-        GPTToolWindowFactory.textPane.text =  text
         GotItTooltip(TOOLTIP_ID, text, editor.project)
-                .withShowCount(Int.MAX_VALUE)
-                .withPosition(Balloon.Position.above)
-                .withMaxWidth(JBUIScale.scale(800))
-                .show(editor.contentComponent) { _, _ -> editor.offsetToXY(caret.selectionStart) }
+            .withShowCount(Int.MAX_VALUE)
+            .withPosition(Balloon.Position.above)
+            .withMaxWidth(JBUIScale.scale(800))
+            .show(editor.contentComponent) { _, _ -> editor.offsetToXY(caret.selectionStart) }
+    }
+
+    private fun updateToolWindowText(text: String) = ApplicationManager.getApplication().invokeLater {
+        GPTToolWindowFactory.text.append(text)
+        GPTToolWindowFactory.textPane.text = GPTToolWindowFactory.text.toString()
+    }
+
+    private fun resetToolWindowText() = ApplicationManager.getApplication().invokeLater {
+        GPTToolWindowFactory.text.clear()
     }
 
     override fun update(e: AnActionEvent) {
@@ -68,18 +76,25 @@ abstract class MenuAction : AnAction() {
         val lang = getFileCodingLanguage(e)
 
         val selectedText = getSelectedText(editor)
+        resetToolWindowText()
 
         val task: Task.Backgroundable = BackgroundTask(project) {
-            val gptResponse = getGPTResponse(lang, selectedText)
-            showCodeReview(editor, gptResponse, caret)
+            getGPTResponse(lang, selectedText) {
+                if (configState.newLayout) {
+                    updateToolWindowText(it)
+                } else {
+                    showCodeReviewGotITTooltip(editor, it, caret)
+                }
+            }
         }
         task.queue()
     }
 
-    abstract fun getGPTResponse(language: Language, selectedText: String): String
+    abstract fun getGPTResponse(language: Language, selectedText: String, handleResponse: (String) -> Unit)
 }
 
-class BackgroundTask(project: Project, val task: () -> Unit) : Task.Backgroundable(project, MenuAction.BACKGROUND_TASK_TITLE) {
+class BackgroundTask(project: Project, val task: () -> Unit) :
+    Task.Backgroundable(project, MenuAction.BACKGROUND_TASK_TITLE) {
 
     override fun run(indicator: ProgressIndicator) {
         indicator.text = MenuAction.BACKGROUND_TASK_TEXT

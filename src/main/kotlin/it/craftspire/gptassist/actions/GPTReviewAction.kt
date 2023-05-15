@@ -5,8 +5,8 @@ import it.craftspire.gptassist.gpt.GPTRequestService
 
 
 class GPTReviewAction : MenuAction() {
-    override fun getGPTResponse(language: Language, selectedText: String): String {
-        return GPTRequestService.instance.reviewSelectedCode(language.toString(), selectedText)
+    override fun getGPTResponse(language: Language, selectedText: String, handleResponse: (String) -> Unit) {
+        GPTRequestService.instance.reviewSelectedCode(language.toString(), selectedText, handleResponse)
     }
 
 }
