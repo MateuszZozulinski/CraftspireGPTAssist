@@ -50,13 +50,23 @@
 
     <change-notes>
         <![CDATA[
-            <p> New version of the plugin containing the features that were most sought after:
+            <p> <strong>Version 0.3.0</strong> - featuring new layout and usability fixes
+            <ul>
+                <li>New upgraded Tooltip Window based layout.</li>
+                <li>New layout utilizes GPT Chat streaming functionality, providing the response almost instantly.</li>
+                <li>Next iteration of improved AI prompts.</li>
+                <li>Changed plugin icon.</li>
+            </ul>
+            </p>
+            <br/>
+            <p> <strong>Version 0.2.1</strong> - new features that were most sought after:
             <ul>
                 <li>Possibility to scan the full class file - just right click with no text selected</li>
                 <li>New, tuned ChatGPT prompts resulting in more accurate and better formatted responses</li>
                 <li>Handling of the OpenAI API bugs (rate limits, service overloaded and more)</li>
                 <li>A set of various test cases for tuning the queries<li>
             </ul>
+            </p>
         ]]>
     </change-notes>
 
